@@ -20,13 +20,36 @@
  * Constructor sets an empty board (default 3 rows, 4 columns) and 
  * specifies it is X's turn first
 **/
-Piezas::Piezas();
+Piezas::Piezas()
+{
+	for(int rows = 0; rows < BOARD_ROWS; rows++)
+	{
+		std::vector <Piece> temp;
+		for(int columns = 0; columns < BOARD_COLS; columns++)
+		{
+			temp.push_back(Blank);
+		}
+		board.push_back(temp);
+	}
+	turn = X;
+}
 
 /**
  * Resets each board location to the Blank Piece value, with a board of the
  * same size as previously specified
 **/
-void Piezas::reset();
+
+void Piezas::reset()
+{
+	for(int rows = 0; rows < BOARD_ROWS; rows++)
+	{
+		for(int columns = 0; columns < BOARD_COLS; columns++)
+		{
+			board[rows][columns] = Blank;		
+		}
+	}
+
+}
 
 /**
  * Places a piece of the current turn on the board, returns what
@@ -36,13 +59,96 @@ void Piezas::reset();
  * Out of bounds coordinates return the Piece Invalid value
  * Trying to drop a piece where it cannot be placed loses the player's turn
 **/ 
-Piece Piezas::dropPiece(int column);
+
+Piece Piezas::dropPiece(int column)
+{
+	if(column > BOARD_COLS || column < 0)
+	{
+		return Invalid;
+		if(turn == X)
+		{	
+			turn = O;
+			return X;
+		}
+		else if(turn  == O)
+		{
+			turn = X;
+			return O;
+		}
+	}
+	else
+	{
+		if(board[0][column] == Blank)
+		{
+			board[0][column] = turn;
+			if(turn == X)
+			{
+				turn = O;
+				return X;
+			}
+			else if(turn  == O)
+			{
+				turn = X;
+				return O;
+			}
+		}
+		else if(board[1][column] == Blank)
+		{
+			board[1][column] = turn;
+			if(turn == X)
+			{
+				turn = O;
+				return X;
+			}
+			else if(turn  == O)
+			{
+				turn = X;
+				return O;
+			}
+		}
+		else if(board[2][column] == Blank)
+		{
+			board[2][column] = turn;
+			if(turn == X)
+			{
+				turn = O;
+				return X;
+			}
+			else if(turn  == O)
+			{
+				turn = X;
+				return O;
+			}
+		}
+		else
+		{
+			return Blank;
+		}
+	}
+		return turn;
+}
 
 /**
  * Returns what piece is at the provided coordinates, or Blank if there
  * are no pieces there, or Invalid if the coordinates are out of bounds
 **/
-Piece Piezas::pieceAt(int row, int column);
+
+Piece Piezas::pieceAt(int row, int column)
+{
+	if(column > BOARD_COLS || column < 0 || row > BOARD_ROWS || row < 0)
+	{
+		return Invalid;
+	}
+	else if(board[row][column] == Blank)
+	{
+		return Blank;
+	}
+	else
+	{
+		return board[row][column];
+	}
+}
+
 
 /**
  * Returns which Piece has won, if there is a winner, Invalid if the game
@@ -53,4 +159,67 @@ Piece Piezas::pieceAt(int row, int column);
  * or horizontally. If both X's and O's have the same max number of pieces in a
  * line, it is a tie.
 **/
-Piece Piezas::gameState();
+
+Piece Piezas::gameState()
+{
+	for(int rows = 0; rows < BOARD_ROWS; rows++)
+	{
+		for(int columns = 0; columns < BOARD_COLS; columns++)
+		{
+			if(board[rows][columns] == Blank)		
+			{
+				return Invalid;
+			}
+		}
+	}	
+	
+	int xWinnerCount = 0;
+	int oWinnerCount = 0;
+	for(int rows = 0; rows < BOARD_ROWS; rows++)
+	{
+		int xCount = 0;
+		int oCount = 0;
+		for(int columns = 0; columns < BOARD_COLS; columns++)
+		{
+			if(board[rows][columns] == X)		
+			{
+				xCount++;
+			}
+			else if(board[rows][columns] == O)		
+			{
+				oCount++;
+			}
+		}
+		if(xCount == 4)
+			xWinnerCount++;
+		else if(oCount == 4)
+			oWinnerCount++;
+	}	
+	for(int columns = 0; columns < BOARD_COLS; columns++)
+	{
+		int xCount = 0;
+		int oCount = 0;
+		for(int rows = 0; rows < BOARD_ROWS; rows++)
+		{
+			if(board[rows][columns] == X)		
+			{
+				xCount++;
+			}
+			else if(board[rows][columns] == O)		
+			{
+				oCount++;
+			}
+		}
+		if(xCount == 3)
+			xWinnerCount++;
+		else if(oCount == 3)
+			oWinnerCount++;
+	}	
+	if(xWinnerCount > oWinnerCount)
+		return X;
+	else if(oWinnerCount > xWinnerCount)
+		return O;
+	else if(xWinnerCount == oWinnerCount)
+		return Blank;
+return Invalid;	
+}
